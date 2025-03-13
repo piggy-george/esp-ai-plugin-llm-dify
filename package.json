@@ -1,0 +1,33 @@
+{
+  "name": "esp-ai-plugin-llm-dify",
+  "version": "1.0.0",
+  "description": "ESP-AI的Dify LLM插件，支持接入Dify API进行对话",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "esp-ai",
+    "dify",
+    "llm",
+    "plugin",
+    "ai",
+    "chatbot"
+  ],
+  "author": "wangzongming",
+  "license": "MIT",
+  "dependencies": {
+    "node-fetch": "^2.6.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wangzongming/esp-ai-plugin-llm-dify.git"
+  },
+  "bugs": {
+    "url": "https://github.com/wangzongming/esp-ai-plugin-llm-dify/issues"
+  },
+  "homepage": "https://github.com/wangzongming/esp-ai-plugin-llm-dify#readme",
+  "publishConfig": {
+    "access": "public"
+  }
+}
