@@ -4,7 +4,9 @@
   "description": "ESP-AI的Dify LLM插件，支持接入Dify API进行对话",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublishOnly": "npm test",
+    "publish": "npm publish --access public"
   },
   "keywords": [
     "esp-ai",
@@ -12,22 +14,36 @@
     "llm",
     "plugin",
     "ai",
-    "chatbot"
+    "chatbot",
+    "esp-ai-plugin",
+    "dify-api"
   ],
-  "author": "wangzongming",
+  "author": {
+    "name": "piggy-george",
+    "url": "https://github.com/piggy-george"
+  },
   "license": "MIT",
   "dependencies": {
     "node-fetch": "^2.6.1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/wangzongming/esp-ai-plugin-llm-dify.git"
+    "url": "git+https://github.com/piggy-george/esp-ai-plugin-llm-dify.git"
   },
   "bugs": {
-    "url": "https://github.com/wangzongming/esp-ai-plugin-llm-dify/issues"
+    "url": "https://github.com/piggy-george/esp-ai-plugin-llm-dify/issues"
   },
-  "homepage": "https://github.com/wangzongming/esp-ai-plugin-llm-dify#readme",
+  "homepage": "https://github.com/piggy-george/esp-ai-plugin-llm-dify#readme",
   "publishConfig": {
-    "access": "public"
-  }
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "files": [
+    "index.js",
+    "README.md",
+    "LICENSE"
+  ]
 }
