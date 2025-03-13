@@ -101,7 +101,7 @@ try {
 
 1. 克隆项目
 ```bash
-git clone https://github.com/wangzongming/esp-ai-plugin-llm-dify.git
+git clone https://github.com/piggy-george/esp-ai-plugin-llm-dify.git
 cd esp-ai-plugin-llm-dify
 ```
 
@@ -128,6 +128,6 @@ MIT
 
 如果你在使用过程中遇到任何问题，可以：
 
-1. 查看 [Issue](https://github.com/wangzongming/esp-ai-plugin-llm-dify/issues) 是否有类似问题
-2. 提交新的 [Issue](https://github.com/wangzongming/esp-ai-plugin-llm-dify/issues/new)
-3. 通过 Pull Request 提交改进 
+1. 查看 [Issue](https://github.com/piggy-george/esp-ai-plugin-llm-dify/issues) 是否有类似问题
+2. 提交新的 [Issue](https://github.com/piggy-george/esp-ai-plugin-llm-dify/issues/new)
+3. 通过 Pull Request 提交改进
