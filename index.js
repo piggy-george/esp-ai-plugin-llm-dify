@@ -42,6 +42,7 @@ module.exports = {
 
                     // 构建请求体
                     const requestBody = {
+                        inputs: {},
                         query: text,
                         response_mode: "streaming",
                         user: device_id
@@ -70,6 +71,12 @@ module.exports = {
                         const errorText = await response.text();
                         log.error(`Dify API错误: ${response.status} ${response.statusText}`);
                         log.error(`错误详情: ${errorText}`);
+                        try {
+                            const errorJson = JSON.parse(errorText);
+                            log.error(`错误结构: ${JSON.stringify(errorJson)}`);
+                        } catch (e) {
+                            // 不是JSON格式，已经输出了原始文本
+                        }
                         throw new Error(`Dify API错误: ${response.status} ${response.statusText}`);
                     }
 
