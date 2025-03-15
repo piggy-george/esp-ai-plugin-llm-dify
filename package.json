@@ -1,6 +1,6 @@
 {
   "name": "esp-ai-plugin-llm-dify-client",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "ESP-AI的Dify LLM插件，支持接入Dify API进行对话",
   "main": "index.js",
   "scripts": {

@@ -37,7 +37,9 @@ module.exports = {
                     // 构建请求headers
                     const headers = {
                         'Authorization': `Bearer ${api_key}`,
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json, text/event-stream',
+                        'User-Agent': 'esp-ai-plugin-llm-dify-client/1.0.5'
                     };
 
                     // 构建请求体
@@ -48,6 +50,13 @@ module.exports = {
                         user: device_id
                     };
 
+                    // 处理历史消息（如果有）
+                    if (llm_historys && llm_historys.length > 0) {
+                        devLog && log.llm_info('添加历史消息，数量:', llm_historys.length);
+                        // 如果Dify需要特定格式的历史消息，可以在这里转换
+                        // 注意：根据Dify文档调整这部分
+                    }
+
                     // 如果存在会话ID，添加到请求中
                     if (llm_params_set && llm_params_set.conversation_id) {
                         requestBody.conversation_id = llm_params_set.conversation_id;
@@ -55,22 +64,29 @@ module.exports = {
                         devLog && log.llm_info('使用现有会话ID：', conversation_id);
                     }
 
+                    // 确保URL格式正确（去除可能的尾部斜杠）
+                    const baseUrl = url.endsWith('/') ? url.slice(0, -1) : url;
+                    
                     // 输出调试信息
-                    devLog && log.llm_info('请求URL:', `${url}/chat-messages`);
+                    devLog && log.llm_info('请求URL:', `${baseUrl}/chat-messages`);
                     devLog && log.llm_info('请求头:', JSON.stringify(headers));
                     devLog && log.llm_info('请求体:', JSON.stringify(requestBody));
 
                     // 发起请求
-                    const response = await fetch(`${url}/chat-messages`, {
+                    const response = await fetch(`${baseUrl}/chat-messages`, {
                         method: 'POST',
                         headers: headers,
-                        body: JSON.stringify(requestBody)
+                        body: JSON.stringify(requestBody),
+                        // 添加超时处理
+                        timeout: other_config.timeout || 30000
                     });
 
                     if (!response.ok) {
                         const errorText = await response.text();
                         log.error(`Dify API错误: ${response.status} ${response.statusText}`);
                         log.error(`错误详情: ${errorText}`);
+                        log.error(`请求URL: ${baseUrl}/chat-messages`);
+                        log.error(`请求体: ${JSON.stringify(requestBody)}`);
                         try {
                             const errorJson = JSON.parse(errorText);
                             log.error(`错误结构: ${JSON.stringify(errorJson)}`);
