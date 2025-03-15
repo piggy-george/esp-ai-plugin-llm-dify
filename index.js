@@ -34,13 +34,6 @@ module.exports = {
 
             async function main() {
                 try {
-                    // 构建消息历史
-                    const messages = [
-                        ...llm_init_messages,
-                        ...llm_historys,
-                        { "role": "user", "content": text }
-                    ];
-
                     // 构建请求headers
                     const headers = {
                         'Authorization': `Bearer ${api_key}`,
@@ -49,7 +42,6 @@ module.exports = {
 
                     // 构建请求体
                     const requestBody = {
-                        inputs: {},
                         query: text,
                         response_mode: "streaming",
                         user: device_id
@@ -62,6 +54,11 @@ module.exports = {
                         devLog && log.llm_info('使用现有会话ID：', conversation_id);
                     }
 
+                    // 输出调试信息
+                    devLog && log.llm_info('请求URL:', `${url}/chat-messages`);
+                    devLog && log.llm_info('请求头:', JSON.stringify(headers));
+                    devLog && log.llm_info('请求体:', JSON.stringify(requestBody));
+
                     // 发起请求
                     const response = await fetch(`${url}/chat-messages`, {
                         method: 'POST',
@@ -70,6 +67,9 @@ module.exports = {
                     });
 
                     if (!response.ok) {
+                        const errorText = await response.text();
+                        log.error(`Dify API错误: ${response.status} ${response.statusText}`);
+                        log.error(`错误详情: ${errorText}`);
                         throw new Error(`Dify API错误: ${response.status} ${response.statusText}`);
                     }
 
@@ -131,7 +131,7 @@ module.exports = {
                                     }
                                 } catch (e) {
                                     // 忽略解析错误
-                                    devLog && log.error('解析响应出错：', e);
+                                    devLog && log.error('解析响应出错：', e, line);
                                 }
                             }
                         }
@@ -157,8 +157,8 @@ module.exports = {
                     devLog && log.llm_info('LLM connect close!\n');
                     conversation_id && devLog && log.llm_info('会话ID：', conversation_id);
                 } catch (error) {
-                    console.log(error);
-                    llmServerErrorCb("Dify LLM 报错: " + error);
+                    console.log('完整错误信息:', error);
+                    llmServerErrorCb("Dify LLM 报错: " + (error.message || error));
                     connectServerCb(false);
                 }
             }
