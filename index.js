@@ -26,6 +26,9 @@ module.exports = {
                 index: 0,
             };
 
+            // 保存会话ID
+            let conversation_id = null;
+
             // 告诉框架要开始连接LLM服务了
             connectServerBeforeCb();
 
@@ -51,6 +54,13 @@ module.exports = {
                         response_mode: "streaming",
                         user: device_id
                     };
+
+                    // 如果存在会话ID，添加到请求中
+                    if (llm_params_set && llm_params_set.conversation_id) {
+                        requestBody.conversation_id = llm_params_set.conversation_id;
+                        conversation_id = llm_params_set.conversation_id;
+                        devLog && log.llm_info('使用现有会话ID：', conversation_id);
+                    }
 
                     // 发起请求
                     const response = await fetch(`${url}/chat-messages`, {
@@ -79,6 +89,7 @@ module.exports = {
                     // 处理流式响应
                     const reader = response.body.getReader();
                     const decoder = new TextDecoder();
+                    let first_response = true;
 
                     while (true) {
                         if (shouldClose) break;
@@ -98,9 +109,26 @@ module.exports = {
                                     const data = JSON.parse(line.slice(5).trim());
                                     const chunk_text = data.answer || '';
 
-                                    devLog === 2 && log.llm_info('LLM 输出：', chunk_text);
-                                    texts["count_text"] += chunk_text;
-                                    cb({ text, texts, chunk_text: chunk_text });
+                                    // 获取会话ID（通常在第一个响应中）
+                                    if (first_response && data.conversation_id) {
+                                        conversation_id = data.conversation_id;
+                                        first_response = false;
+                                        devLog && log.llm_info('获取到新会话ID：', conversation_id);
+                                        
+                                        // 通知框架保存会话ID
+                                        cb({ 
+                                            text, 
+                                            texts, 
+                                            chunk_text, 
+                                            llm_params: { 
+                                                conversation_id 
+                                            } 
+                                        });
+                                    } else {
+                                        devLog === 2 && log.llm_info('LLM 输出：', chunk_text);
+                                        texts["count_text"] += chunk_text;
+                                        cb({ text, texts, chunk_text });
+                                    }
                                 } catch (e) {
                                     // 忽略解析错误
                                     devLog && log.error('解析响应出错：', e);
@@ -111,12 +139,13 @@ module.exports = {
 
                     if (shouldClose) return;
 
-                    // 通知框架响应结束
+                    // 通知框架响应结束，并传递会话ID
                     cb({
                         text,
                         is_over: true,
                         texts,
                         shouldClose,
+                        llm_params: conversation_id ? { conversation_id } : undefined
                     });
 
                     // 通知框架关闭了与LLM服务的连接
@@ -126,6 +155,7 @@ module.exports = {
                     devLog && log.llm_info(texts["count_text"]);
                     devLog && log.llm_info('===');
                     devLog && log.llm_info('LLM connect close!\n');
+                    conversation_id && devLog && log.llm_info('会话ID：', conversation_id);
                 } catch (error) {
                     console.log(error);
                     llmServerErrorCb("Dify LLM 报错: " + error);
